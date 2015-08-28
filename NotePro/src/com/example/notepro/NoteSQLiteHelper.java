@@ -11,15 +11,17 @@ public class NoteSQLiteHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_CONTENT = "content";
 	public static final String CREATED_AT = "created_at";
+	public static final String UPDATED_AT = "updated_at";
 	public static final String ALARM_TIME = "alarm_time";
+	public static final String COLUMN_COLOR = "color";
 
 	private static final String DATABASE_NAME = "note.db";
 	private static final int DATABASE_VERSION = 1;
 
 	private static final String DATABASE_CREATE = "create table " + TABLE_NOTE
 			+ "(" + COLUMN_ID + " integer primary key autoincrement, "
-			+ COLUMN_CONTENT + " text not null, " + CREATED_AT
-			+ " text not null, " + ALARM_TIME + " text);";
+			+ COLUMN_CONTENT + " text not null, " + COLUMN_COLOR + " integer, " + CREATED_AT
+			+ " text not null, " + UPDATED_AT + " text not null, " + ALARM_TIME + " text);";
 
 	public NoteSQLiteHelper(Context context) {
 		// TODO Auto-generated constructor stub

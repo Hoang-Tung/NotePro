@@ -26,7 +26,7 @@ public class ChangeColorDialog extends DialogFragment{
 	private ChangeColorDialog colorDialog;
 	
 	public interface ChangeColorDialogListener{
-		public void onColorClick(String color);
+		public void onColorClick(int position);
 	}
 	
 	ChangeColorDialogListener mListener;
@@ -64,7 +64,7 @@ public class ChangeColorDialog extends DialogFragment{
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				// TODO Auto-generated method stub
-				mListener.onColorClick(listColor[position]);
+				mListener.onColorClick(position);
 				colorDialog.dismiss();
 			}
 		});

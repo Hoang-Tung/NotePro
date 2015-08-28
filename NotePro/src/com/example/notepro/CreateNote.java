@@ -2,6 +2,7 @@ package com.example.notepro;
 
 import com.example.dialog.ChangeColorDialog;
 import com.example.dialog.ChangeColorDialog.ChangeColorDialogListener;
+import com.example.utils.Constant;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 @SuppressWarnings("deprecation")
 public class CreateNote extends ActionBarActivity implements ChangeColorDialogListener{
@@ -18,12 +20,14 @@ public class CreateNote extends ActionBarActivity implements ChangeColorDialogLi
 	private NoteDataSource noteDataSource;
 	EditText editText;
 	Button saveButton;
+	LinearLayout container;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_note);
+		container = (LinearLayout)findViewById(R.id.container);
 		editText = (EditText)findViewById(R.id.contentEdit);
 		saveButton = (Button)findViewById(R.id.saveBtn);
 	}
@@ -54,8 +58,10 @@ public class CreateNote extends ActionBarActivity implements ChangeColorDialogLi
 	}
 
 	@Override
-	public void onColorClick(String color) {
+	public void onColorClick(int color) {
 		// TODO Auto-generated method stub
-		Log.d("color pick", color);
+		//container.setBackgroundColor();
+		editText.setBackgroundColor(Constant.colorList[color]);
+		Log.d("color pick", "" + color);
 	}
 }
