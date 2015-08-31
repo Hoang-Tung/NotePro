@@ -7,6 +7,7 @@
     <string name="action_add_new"> Add Note</string>
     <string name="create_note"> Add Note</string>
     <string name="change_color"> Change Color</string>
+    <string name="take_picture"> Take picture</string>
 	
     <string-array name="color_array">
         <item >Black</item>
