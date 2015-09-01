@@ -17,6 +17,7 @@
         android:id="@+id/image_space"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_weight="0.5"
         android:columnWidth="90dp"
         android:numColumns="auto_fit">
         
@@ -25,8 +26,8 @@
     <EditText
         android:id="@+id/contentEdit"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        
         android:textSize="20sp"
         android:hint="Content" />
 

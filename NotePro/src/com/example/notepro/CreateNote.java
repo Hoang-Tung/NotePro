@@ -2,27 +2,25 @@ package com.example.notepro;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
-
-import com.example.customadapter.ImageBasicAdapter;
-import com.example.dialog.ChangeColorDialog;
-import com.example.dialog.ChangeColorDialog.ChangeColorDialogListener;
-import com.example.notemodel.Note;
-import com.example.utils.Constant;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -33,18 +31,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.view.View.OnClickListener;
+import android.widget.TimePicker;
+import android.widget.TimePicker.OnTimeChangedListener;
+
+import com.example.customadapter.ImageBasicAdapter;
+import com.example.dialog.ChangeColorDialog;
+import com.example.dialog.ChangeColorDialog.ChangeColorDialogListener;
+import com.example.notemodel.Note;
+import com.example.utils.Constant;
 
 @SuppressLint({ "NewApi", "SimpleDateFormat" })
 @SuppressWarnings("deprecation")
 public class CreateNote extends ActionBarActivity implements
 		ChangeColorDialogListener {
 
+	Context context;
 	private NoteDataSource noteDataSource;
 	EditText editText;
 	EditText editTitleText;
@@ -58,13 +66,16 @@ public class CreateNote extends ActionBarActivity implements
 	ArrayList<Bitmap> imageBitmaps = new ArrayList<Bitmap>();
 	ArrayList<String> imagePath = new ArrayList<String>();
 	String mCurrentPhotoPath;
-
+	String datealarm = null;
+	String timealarm;
+	String alarmClock;
 	static final int REQUEST_IMAGE_CAPTURE = 1;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		context = this;
 		noteDataSource = new NoteDataSource(this);
 		noteDataSource.open();
 		setContentView(R.layout.create_note);
@@ -84,6 +95,16 @@ public class CreateNote extends ActionBarActivity implements
 			Log.d("note", note.getTitle());
 			editTitleText.setText(note.getTitle());
 			editText.setText(note.getContent());
+			String imagePaths = note.getImagePath();
+			if (imagePaths != null) {
+				imagePath = getImagePathFromDatabase(imagePaths);
+				Log.d("imagePath", imagePaths);
+				Log.d("imagePath size", "" + imagePath.size());
+				getBitMapFromFile();
+				ImageBasicAdapter adapter = new ImageBasicAdapter(this, 0,
+						imageBitmaps);
+				imageThumbnail.setAdapter(adapter);
+			}
 		}
 
 		saveButton.setOnClickListener(new OnClickListener() {
@@ -133,12 +154,21 @@ public class CreateNote extends ActionBarActivity implements
 					Note note = noteDataSource.createNote(editTitleText
 							.getText().toString(), editText.getText()
 							.toString(), "", created_at, String
-							.valueOf(colorNum), created_at, String
-							.valueOf(typeNum), "");
+							.valueOf(colorNum), datealarm, String
+							.valueOf(typeNum), buildStringStoreImage(imagePath));
+					AlarmManagerHelper.setAlarms(context);
 				} else {
 					Log.d("imagePath", buildStringStoreImage(imagePath));
+					Note notes = (Note) getIntent().getExtras()
+							.getSerializable("note_content");
+					Note note = noteDataSource.updateNote("" + notes.getId(),
+							editTitleText.getText().toString(), editText
+									.getText().toString(), created_at, String
+									.valueOf(colorNum), datealarm,
+							buildStringStoreImage(imagePath));
+					
 				}
-				// Log.d("Note info", note.getInfoNote());
+
 				noteDataSource.close();
 				Intent intent = new Intent(CreateNote.this, MainActivity.class);
 				startActivity(intent);
@@ -160,7 +190,20 @@ public class CreateNote extends ActionBarActivity implements
 			}
 			if (photoFile != null) {
 				startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-				
+
+			}
+		}
+	}
+
+	public void getBitMapFromFile() {
+		if (!imagePath.isEmpty()) {
+			for (int i = 0; i < imagePath.size(); i++) {
+				Log.d("image file", imagePath.get(i));
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+				Bitmap bitmap = BitmapFactory.decodeFile(imagePath.get(i),
+						options);
+				imageBitmaps.add(bitmap);
 			}
 		}
 	}
@@ -169,7 +212,8 @@ public class CreateNote extends ActionBarActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+		if (requestCode == REQUEST_IMAGE_CAPTURE
+				&& resultCode == Activity.RESULT_OK) {
 			Bundle extras = data.getExtras();
 			Bitmap imaBitmap = (Bitmap) extras.get("data");
 			imageBitmaps.add(imaBitmap);
@@ -177,7 +221,7 @@ public class CreateNote extends ActionBarActivity implements
 					imageBitmaps);
 			ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
 			imaBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream2);
-			
+
 			try {
 				FileOutputStream fos = new FileOutputStream(mCurrentPhotoPath);
 				fos.write(stream2.toByteArray());
@@ -186,7 +230,7 @@ public class CreateNote extends ActionBarActivity implements
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			imagePath.add(mCurrentPhotoPath);
 			imageThumbnail.setAdapter(adapter);
 		}
@@ -204,8 +248,9 @@ public class CreateNote extends ActionBarActivity implements
 	public ArrayList<String> getImagePathFromDatabase(String images) {
 		ArrayList<String> imageList = new ArrayList<String>();
 
-		imageList = (ArrayList<String>) Arrays.asList(images.split(";"));
-
+		List<String> imageP = Arrays.asList(images.split(";"));
+		Log.d("imageP", "" + imageP.size());
+		imageList.addAll(imageP);
 		return imageList;
 	}
 
@@ -234,6 +279,62 @@ public class CreateNote extends ActionBarActivity implements
 		getMenuInflater().inflate(R.menu.menu_on_add, menu);
 		return true;
 	}
+	
+	
+	
+	private void pickDateTimeDialog(){
+		final Dialog dialog = new Dialog(this);
+		dialog.setContentView(R.layout.date_time_picker);
+		dialog.setTitle("Alarm Clock");
+		String alarm;
+		
+		final Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        
+        timealarm = "" + hour + ":" + minute;
+        datealarm = "" + year + "" + month + "" + day;
+        
+		TimePicker timePicker = (TimePicker)dialog.findViewById(R.id.time_picker);
+		
+		timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
+			
+			@Override
+			public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+				// TODO Auto-generated method stub
+				timealarm = "" + hourOfDay +":" + minute;
+			}
+		});
+		
+		DatePicker datePicker = (DatePicker)dialog.findViewById(R.id.date_picker);
+		datePicker.init(year, month, day, new OnDateChangedListener() {
+			
+			@Override
+			public void onDateChanged(DatePicker view, int year, int monthOfYear,
+					int dayOfMonth) {
+				// TODO Auto-generated method stub
+				Log.d("date", "year: " + year + " month: " + monthOfYear + " day: " + dayOfMonth);
+				datealarm ="" + year + "" + monthOfYear + "" + dayOfMonth; 
+			}
+		});
+
+		
+		Button getAlarmTime = (Button)dialog.findViewById(R.id.get_time_date);
+		getAlarmTime.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				alarmClock = datealarm + " " + timealarm;
+				Log.d("alarmClock", alarmClock);
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -248,6 +349,9 @@ public class CreateNote extends ActionBarActivity implements
 			Log.d("take picture", "take_picture");
 			dispatchTakePictureIntent();
 			return true;
+		} else if (id == R.id.action_set_alarm){
+			Log.d("set Clock", "set alarm clock");
+			pickDateTimeDialog();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -265,10 +369,7 @@ public class CreateNote extends ActionBarActivity implements
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
 				.format(new Date());
 		String imageFileName = "JPEG_" + timeStamp + "_";
-//		File storageDir = Environment
-//				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES,"");
-//		File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-		
+
 		File mediaStorageDir = new File(
 				Environment
 						.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),

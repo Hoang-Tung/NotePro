@@ -8,7 +8,8 @@
     <string name="create_note"> Add Note</string>
     <string name="change_color"> Change Color</string>
     <string name="take_picture"> Take picture</string>
-	
+	<string name="alarm_clock"> Alarm Clock</string>
+    
     <string-array name="color_array">
         <item >Black</item>
         <item >Blue</item>

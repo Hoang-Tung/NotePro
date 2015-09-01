@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.notemodel.Note;
 import com.example.notepro.R;
+import com.example.utils.Constant;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class NoteListAdapter extends ArrayAdapter<Note> {
@@ -32,6 +34,7 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 		TextView title;
 		TextView content;
 		TextView created_at;
+		LinearLayout contanier;
 	}
 
 	@SuppressLint("NewApi")
@@ -52,7 +55,7 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 					.findViewById(R.id.note_content);
 			viewHolder.created_at = (TextView) rowView
 					.findViewById(R.id.note_created_time);
-
+			viewHolder.contanier = (LinearLayout) rowView.findViewById(R.id.cell_container);
 			rowView.setTag(viewHolder);
 		}
 
@@ -65,7 +68,9 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 
 		holder.content.setText(noteList.get(position).getContent());
 		holder.created_at.setText(noteList.get(position).getStringCreated_at());
-
+		
+		holder.contanier.setBackgroundColor(Constant.colorList[noteList.get(position).getColor()]);
+		
 		return rowView;
 	}
 }

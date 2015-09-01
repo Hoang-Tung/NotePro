@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.notemodel.Note;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+@SuppressLint("NewApi")
 public class NoteDataSource {
 	private SQLiteDatabase database;
 	private NoteSQLiteHelper dbHelper;
@@ -36,18 +38,20 @@ public class NoteDataSource {
 	}
 
 	public Note createNote(String title, String content, String updated_at,
-			String created_at, String color, String alarm_time, String type, String imagePath) {
+			String created_at, String color, String alarm_time, String type,
+			String imagePath) {
 
 		ContentValues values = new ContentValues();
 		values.put(NoteSQLiteHelper.COLUMN_TITLE, title);
 		values.put(NoteSQLiteHelper.COLUMN_CONTENT, content);
 		values.put(NoteSQLiteHelper.COLUMN_COLOR, color);
 		values.put(NoteSQLiteHelper.COLUMN_TYPE, type);
-		values.put(NoteSQLiteHelper.CREATED_AT, created_at);
+		if (!created_at.isEmpty())
+			values.put(NoteSQLiteHelper.CREATED_AT, created_at);
 		values.put(NoteSQLiteHelper.UPDATED_AT, updated_at);
 		values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
 		values.put(NoteSQLiteHelper.COLUMN_IMAGE, imagePath);
-		
+
 		long insertId = database.insert(NoteSQLiteHelper.TABLE_NOTE, null,
 				values);
 
@@ -60,9 +64,39 @@ public class NoteDataSource {
 		cursor.close();
 		return note;
 	}
-	
-	
-	
+
+	public Note updateNote(String id ,String title, String content, String updated_at,
+			String color, String alarm_time, String imagePath) {
+		
+		ContentValues values = new ContentValues();
+		if(title != null){
+			values.put(NoteSQLiteHelper.COLUMN_TITLE, title);
+		}
+		if(content != null){
+			values.put(NoteSQLiteHelper.COLUMN_CONTENT, content);
+		}
+		values.put(NoteSQLiteHelper.UPDATED_AT, updated_at);
+		if(color != null){
+			values.put(NoteSQLiteHelper.COLUMN_COLOR, color);
+		}
+		if(alarm_time != null){
+			values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
+		}if(imagePath != null){
+			values.put(NoteSQLiteHelper.COLUMN_IMAGE, imagePath);
+		}
+		
+		int updated = database.update(NoteSQLiteHelper.TABLE_NOTE, values, NoteSQLiteHelper.COLUMN_ID + " = " + "'" + id + "'", null);
+		
+		Cursor cursor = database.query(NoteSQLiteHelper.TABLE_NOTE, allCollums,
+				NoteSQLiteHelper.COLUMN_ID + " = " + id, null, null,
+				null, null);
+
+		cursor.moveToFirst();
+		Note note = cursorToNote(cursor);
+		cursor.close();
+		return note;
+	}
+
 	public void deleteComment(Note note) {
 		long id = note.getId();
 		Log.d("Note delete with id: ", "" + id);
@@ -101,7 +135,7 @@ public class NoteDataSource {
 		if (cursor.getString(6) != null) {
 			note.setAlarm_time(cursor.getString(6));
 		}
-		if(cursor.getString(8) != null){
+		if (cursor.getString(8) != null) {
 			note.setImagePath(cursor.getString(8));
 		}
 		return note;

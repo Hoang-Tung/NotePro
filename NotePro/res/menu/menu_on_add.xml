@@ -14,5 +14,10 @@
 	    android:title="@string/take_picture"
 	    android:icon="@drawable/camera"
 	    app:showAsAction="ifRoom"/>
-    
+    <item 
+        android:id="@+id/action_set_alarm"
+        android:orderInCategory="102"
+        android:title="@string/alarm_clock"
+        android:icon="@drawable/alarm_clock"
+        app:showAsAction="ifRoom"/>
 </menu>
