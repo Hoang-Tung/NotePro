@@ -5,69 +5,59 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true" >
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:orientation="horizontal" >
 
             <EditText
-                android:id="@+id/titleEdit"
-                style="@android:style/TextAppearance.Large"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.4"
-                android:hint="@string/title" />
-
-            <Button
-                android:id="@+id/alarm_time"
-                android:layout_width="match_parent"
+                android:id="@+id/check_list_title"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/delete_alarm_clock" />
+                android:layout_weight="1" />
 
-            <com.example.customview.LineEditText
-                android:id="@+id/contentEdit"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:drawableBottom="@drawable/bottom_line"
-                android:gravity="top"
-                android:hint="@string/content"
-                android:inputType="textMultiLine"
-                android:minLines="2"
-                android:textSize="20sp" />
+            <ImageButton
+                android:id="@+id/item_add"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/add" />
         </LinearLayout>
-    </ScrollView>
 
-    <GridView
-        android:id="@+id/image_space"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:clickable="true"
-        android:horizontalSpacing="10dp"
-        android:numColumns="3"
-        android:isScrollContainer="false"
-        android:verticalSpacing="10dp" >
-    </GridView>
+        <Button
+            android:id="@+id/alarm_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/delete_alarm_clock" />
+
+        <ListView
+            android:id="@+id/checklist"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:isScrollContainer="false" >
+        </ListView>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal" >
-		
-        <ImageButton 
+
+        <ImageButton
             android:id="@+id/back"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/back_narow"/>
-        
+            android:src="@drawable/back_narow" />
+
         <Button
             android:id="@+id/saveBtn"
             android:layout_width="0dp"
@@ -90,13 +80,13 @@
             android:layout_weight="1"
             android:text="@string/dismiss"
             android:visibility="gone" />
-        <ImageButton 
+
+        <ImageButton
             android:id="@+id/forward"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/forward_narow"/>
-        
+            android:src="@drawable/forward_narow" />
     </LinearLayout>
 
 </LinearLayout>

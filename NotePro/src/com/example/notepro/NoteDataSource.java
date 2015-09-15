@@ -49,7 +49,8 @@ public class NoteDataSource {
 		if (!created_at.isEmpty())
 			values.put(NoteSQLiteHelper.CREATED_AT, created_at);
 		values.put(NoteSQLiteHelper.UPDATED_AT, updated_at);
-		values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
+		if (alarm_time != null)
+			values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
 		values.put(NoteSQLiteHelper.COLUMN_IMAGE, imagePath);
 
 		long insertId = database.insert(NoteSQLiteHelper.TABLE_NOTE, null,
@@ -64,32 +65,15 @@ public class NoteDataSource {
 		cursor.close();
 		return note;
 	}
-
-	public Note updateNote(String id ,String title, String content, String updated_at,
-			String color, String alarm_time, String imagePath) {
-		
+	
+	public Note updateAlarmNote(String id, String alarm_time){
 		ContentValues values = new ContentValues();
-		if(title != null){
-			values.put(NoteSQLiteHelper.COLUMN_TITLE, title);
-		}
-		if(content != null){
-			values.put(NoteSQLiteHelper.COLUMN_CONTENT, content);
-		}
-		values.put(NoteSQLiteHelper.UPDATED_AT, updated_at);
-		if(color != null){
-			values.put(NoteSQLiteHelper.COLUMN_COLOR, color);
-		}
-		if(alarm_time != null){
-			values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
-		}if(imagePath != null){
-			values.put(NoteSQLiteHelper.COLUMN_IMAGE, imagePath);
-		}
-		
-		int updated = database.update(NoteSQLiteHelper.TABLE_NOTE, values, NoteSQLiteHelper.COLUMN_ID + " = " + "'" + id + "'", null);
-		
-		Cursor cursor = database.query(NoteSQLiteHelper.TABLE_NOTE, allCollums,
-				NoteSQLiteHelper.COLUMN_ID + " = " + id, null, null,
-				null, null);
+		values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
+		int updated = database.update(NoteSQLiteHelper.TABLE_NOTE, values, NoteSQLiteHelper.COLUMN_ID + " = " +"'" + id +"'", null);
+		Cursor cursor = database
+				.query(NoteSQLiteHelper.TABLE_NOTE, allCollums,
+						NoteSQLiteHelper.COLUMN_ID + " = " + id, null, null,
+						null, null);
 
 		cursor.moveToFirst();
 		Note note = cursorToNote(cursor);
@@ -97,6 +81,49 @@ public class NoteDataSource {
 		return note;
 	}
 
+	public Note updateNote(String id, String title, String content,
+			String updated_at, String color, String alarm_time, String imagePath) {
+
+		ContentValues values = new ContentValues();
+		if (title != null) {
+			values.put(NoteSQLiteHelper.COLUMN_TITLE, title);
+		}
+		if (content != null) {
+			values.put(NoteSQLiteHelper.COLUMN_CONTENT, content);
+		}
+		values.put(NoteSQLiteHelper.UPDATED_AT, updated_at);
+		if (color != null) {
+			values.put(NoteSQLiteHelper.COLUMN_COLOR, color);
+		}
+		if (alarm_time != null) {
+			values.put(NoteSQLiteHelper.ALARM_TIME, alarm_time);
+		}
+		if (imagePath != null) {
+			values.put(NoteSQLiteHelper.COLUMN_IMAGE, imagePath);
+		}
+
+		int updated = database.update(NoteSQLiteHelper.TABLE_NOTE, values,
+				NoteSQLiteHelper.COLUMN_ID + " = " + "'" + id + "'", null);
+
+		Cursor cursor = database
+				.query(NoteSQLiteHelper.TABLE_NOTE, allCollums,
+						NoteSQLiteHelper.COLUMN_ID + " = " + id, null, null,
+						null, null);
+
+		cursor.moveToFirst();
+		Note note = cursorToNote(cursor);
+		cursor.close();
+		return note;
+	}
+	
+	public void deleteAlarm(Note note){
+		long id = note.getId();
+		ContentValues cv = new ContentValues();
+		cv.put(NoteSQLiteHelper.ALARM_TIME, "");
+		database.update(NoteSQLiteHelper.TABLE_NOTE, cv, "id " + "=" + " '" + id + "'", null);
+		
+	}
+	
 	public void deleteComment(Note note) {
 		long id = note.getId();
 		Log.d("Note delete with id: ", "" + id);
@@ -133,6 +160,8 @@ public class NoteDataSource {
 			note.setUpdated_at(cursor.getString(5));
 		}
 		if (cursor.getString(6) != null) {
+			Log.d("cursor alarm_time" + this.getClass().getName(),
+					cursor.getString(6));
 			note.setAlarm_time(cursor.getString(6));
 		}
 		if (cursor.getString(8) != null) {

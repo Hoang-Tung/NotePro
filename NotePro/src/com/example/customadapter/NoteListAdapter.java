@@ -9,11 +9,13 @@ import com.example.utils.Constant;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,6 +37,7 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 		TextView content;
 		TextView created_at;
 		LinearLayout contanier;
+		ImageView alarmSignal;
 	}
 
 	@SuppressLint("NewApi")
@@ -55,22 +58,35 @@ public class NoteListAdapter extends ArrayAdapter<Note> {
 					.findViewById(R.id.note_content);
 			viewHolder.created_at = (TextView) rowView
 					.findViewById(R.id.note_created_time);
-			viewHolder.contanier = (LinearLayout) rowView.findViewById(R.id.cell_container);
+			viewHolder.contanier = (LinearLayout) rowView
+					.findViewById(R.id.cell_container);
+			viewHolder.alarmSignal = (ImageView) rowView
+					.findViewById(R.id.alarm_sign);
 			rowView.setTag(viewHolder);
 		}
 
 		ViewHolder holder = (ViewHolder) rowView.getTag();
 
-		Log.d("content", noteList.get(position).getContent());
-
-		Log.d("title", noteList.get(position).getTitle());
 		holder.title.setText(noteList.get(position).getTitle());
 
-		holder.content.setText(noteList.get(position).getContent());
+		if (noteList.get(position).getAlarm_time() == null) {
+			holder.alarmSignal.setVisibility(View.GONE);
+		}
+		Log.d("note id" + position, "note type "
+				+ noteList.get(position).getType());
+		if (noteList.get(position).getType() == 1) {
+			holder.content.setText(noteList.get(position).getContent());
+		} else {
+			holder.content.setText("Check List");
+		}
+
 		holder.created_at.setText(noteList.get(position).getStringCreated_at());
-		
-		holder.contanier.setBackgroundColor(Constant.colorList[noteList.get(position).getColor()]);
-		
+
+		holder.contanier.setBackgroundColor(Constant.colorList[noteList.get(
+				position).getColor()]);
+		Log.d("row color", "" + noteList.get(position).getId() + " color "
+				+ noteList.get(position).getColor());
+
 		return rowView;
 	}
 }

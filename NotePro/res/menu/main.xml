@@ -5,14 +5,65 @@
 
     <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/setting"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never"/>
-    <item 
+        app:showAsAction="never|withText"/>
+    <item
         android:id="@+id/action_add_new"
+        android:icon="@drawable/add"
         android:orderInCategory="101"
         android:title="@string/action_add_new"
-        android:icon="@drawable/icon"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_add_new_note"
+                android:orderInCategory="104"
+                android:title="Note"
+                app:showAsAction="withText"/>
+            <item
+                android:id="@+id/action_add_new_check_list"
+                android:orderInCategory="104"
+                android:title="Check list"
+                app:showAsAction="withText"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_change_view"
+        android:icon="@drawable/equilazer"
+        android:orderInCategory="102"
+        android:title="Change View"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/view_by_list"
+                android:icon="@drawable/list_view"
+                android:showAsAction="withText"
+                android:title="List View"/>
+            <item
+                android:id="@+id/view_by_grid"
+                android:icon="@drawable/grid_view"
+                android:showAsAction="withText"
+                android:title="Grid View"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_sort"
+        android:orderInCategory="103"
+        android:title="Sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/sort_by_title"
+                android:icon="@drawable/list_view"
+                android:showAsAction="withText"
+                android:title="Sort by title"/>
+            <item
+                android:id="@+id/sort_by_time"
+                android:icon="@drawable/grid_view"
+                android:showAsAction="withText"
+                android:title="Sort by time"/>
+        </menu>
+    </item>
 
 </menu>

@@ -17,6 +17,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 @SuppressLint("NewApi")
 public class AlarmManagerHelper extends BroadcastReceiver {
@@ -32,29 +33,24 @@ public class AlarmManagerHelper extends BroadcastReceiver {
 		NoteDataSource noteDataSource = new NoteDataSource(context);
 		noteDataSource.open();
 		ArrayList<Note> allNote = noteDataSource.getAllNotes();
-		noteDataSource.close();
+		
+		Date now = new Date();
 		Calendar calendar = Calendar.getInstance();
 		for (Note note : allNote) {
-			if (note.getStringAlarm_time() != null) {
-				PendingIntent pIntent = createPendingIntent(context, note);
-				Date alarm_time = new Date();
-				DateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm",
-						Locale.ENGLISH);
 
-				try {
-					alarm_time = format.parse(note.getStringAlarm_time());
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if (note.getAlarm_time() != null) {
+				PendingIntent pIntent = createPendingIntent(context, note);
+				if (now.before(note.getAlarm_time())) {
+					calendar.setTime(note.getAlarm_time());
+					Log.d("calendar", calendar.getTime().toString());
+					setAlarms(context, calendar, pIntent);
+				} else{
+					noteDataSource.updateAlarmNote("" +note.getId(), "");
 				}
-				calendar.setTime(alarm_time);
-				setAlarms(context, calendar, pIntent);
 			}
 		}
-
+		noteDataSource.close();
 	}
-	
-	
 
 	public static void setAlarms(Context context, Calendar calendar,
 			PendingIntent pIntent) {
@@ -76,7 +72,7 @@ public class AlarmManagerHelper extends BroadcastReceiver {
 		ArrayList<Note> allNote = noteDataSource.getAllNotes();
 		noteDataSource.close();
 		for (Note note : allNote) {
-			if (note.getStringAlarm_time() != null) {
+			if (note.getAlarm_time() != null) {
 				PendingIntent pIntent = createPendingIntent(context, note);
 				AlarmManager alarmManager = (AlarmManager) context
 						.getSystemService(Context.ALARM_SERVICE);
@@ -84,14 +80,26 @@ public class AlarmManagerHelper extends BroadcastReceiver {
 			}
 		}
 	}
+	
+	public static void cancelAlarmsById(Context context, Note note){
+		PendingIntent pIntent = createPendingIntent(context, note);
+		AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.cancel(pIntent);
+	}
 
-	private static PendingIntent createPendingIntent(Context contenxt,
+	private static PendingIntent createPendingIntent(Context context,
 			Note model) {
-
-		Intent intent = new Intent(contenxt, AlarmService.class);
+		NoteDataSource noteDataSource = new NoteDataSource(context);
+		noteDataSource.open();
+		ArrayList<Note> allNote = noteDataSource.getAllNotes();
+		noteDataSource.close();
+		Intent intent = new Intent(context, AlarmService.class);
 		intent.putExtra("id", model.getId());
+		intent.putExtra("isAlarm", true);
 		intent.putExtra("time", model.getStringAlarm_time());
-		return PendingIntent.getService(contenxt, model.getId(), intent,
+		intent.putExtra("note_content", model);
+		intent.putExtra("list_note", allNote);
+		return PendingIntent.getService(context, model.getId(), intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 }

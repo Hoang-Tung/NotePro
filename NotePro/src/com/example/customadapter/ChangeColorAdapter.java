@@ -45,9 +45,6 @@ public class ChangeColorAdapter extends ArrayAdapter<String> {
 		
 		ViewHolder holder = (ViewHolder) rowView.getTag();
 		
-		if(position == 0)
-			holder.textView.setTextColor(Color.WHITE);
-		
 		holder.textView.setText(listColor[position]);
 		holder.linearLayout.setBackgroundColor(Constant.colorList[position]);
 		

@@ -9,18 +9,22 @@
     <string name="change_color"> Change Color</string>
     <string name="take_picture"> Take picture</string>
 	<string name="alarm_clock"> Alarm Clock</string>
-    
+    <string name="save"> Save</string>
+    <string name="dismiss"> Dismiss</string>
+    <string name="title"> Title</string>
+    <string name="content"> Content</string>
+	
     <string-array name="color_array">
-        <item >Black</item>
         <item >Blue</item>
-        <item >Cyan</item>
-        <item >DkGRAY</item>
-        <item >Gray</item>
         <item >Green</item>
-        <item >LtGray</item>
-        <item >Magenta</item>
-        <item >Red</item>
+        <item >Pink</item>
+        <item >Purple</item>
         <item >White</item>
         <item >Yellow</item>
+    </string-array>
+    
+    <string-array name="del_or_edit">
+        <item> Edit</item>
+        <item> Delete</item>
     </string-array>
 </resources>
